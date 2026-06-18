@@ -11,10 +11,10 @@ CORS(app)
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Yeh SSL Handshake error ko band kar dega
+# Secure DB Connection
 MONGO_URI = "mongodb+srv://admin123:adminpass@cluster0.a93no6o.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
-
 client = MongoClient(MONGO_URI)
+
 db = client["MagadhLibrary"]
 students_collection = db["students"]
 admin_collection = db["admin"]
@@ -31,16 +31,12 @@ def init_admin():
                 "address": "Add- Block Road, New Bypas Road (Asthawan), Bihar"
             })
     except Exception as e:
-        print(f"Database connection error: {e}")
+        print(f"Database error: {e}")
 
 init_admin()
 
-# ----------------------------------------------------
-# MAGIC FIX: Automatically detect Live URL or Localhost
-# ----------------------------------------------------
 def get_base_url():
     url = request.host_url
-    # Agar Render par hain, toh HTTPS lagao taaki mobile par image load ho
     if "onrender.com" in url and url.startswith("http://"):
         url = url.replace("http://", "https://")
     return url
@@ -54,7 +50,9 @@ def signup():
     data = request.json
     if students_collection.find_one({"email": data.get('email')}):
         return jsonify({"message": "Email already exists"}), 400
+    
     new_student = {
+        "aadhaar": data.get('aadhaar', 'N/A'),
         "name": data.get('name'),
         "email": data.get('email'),
         "phone": data.get('phone'),
@@ -65,7 +63,8 @@ def signup():
         "join_date": None,
         "expiry_date": None,
         "status": "Pending",
-        "attendance": []
+        "attendance": [],
+        "payment_status": "Remaining"  # Default status feature added
     }
     students_collection.insert_one(new_student)
     return jsonify({"message": "Account created successfully!"}), 201
@@ -118,7 +117,6 @@ def assign_slot():
         filename = str(uuid.uuid4()) + "_" + photo_file.filename.replace(" ", "_")
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         photo_file.save(filepath)
-        # UPDATE: Ab 'localhost' ki jagah get_base_url() use ho raha hai
         photo_url = f"{get_base_url()}static/uploads/{filename}"
 
     join_date = datetime.now()
@@ -140,6 +138,15 @@ def assign_slot():
     )
     if result.modified_count > 0:
         return jsonify({"message": "Registration confirmed and 1-month plan activated!"}), 200
+    return jsonify({"message": "Student not found."}), 404
+
+@app.route('/api/mark-paid', methods=['POST'])
+def mark_paid():
+    data = request.json
+    email = data.get('email')
+    result = students_collection.update_one({"email": email}, {"$set": {"payment_status": "Paid"}})
+    if result.modified_count > 0:
+        return jsonify({"message": "Payment status updated to Paid successfully!"}), 200
     return jsonify({"message": "Student not found."}), 404
 
 @app.route('/api/mark-attendance', methods=['POST'])
@@ -164,13 +171,15 @@ def get_all_students():
     students = []
     for s in students_collection.find():
         students.append({
+            "aadhaar": s.get("aadhaar", "N/A"),
             "name": s.get("name", "N/A"),
             "email": s.get("email", "N/A"),
             "phone": s.get("phone", "N/A"),
             "slot": s.get("slot_number", "Unassigned"),
             "address": s.get("address", "N/A"),
             "expiry_date": s.get("expiry_date", "Pending"),
-            "attendance": s.get("attendance", [])
+            "attendance": s.get("attendance", []),
+            "payment_status": s.get("payment_status", "Remaining")
         })
     return jsonify(students), 200
 
@@ -193,7 +202,6 @@ def update_photo():
     filename = str(uuid.uuid4()) + "_" + photo_file.filename.replace(" ", "_")
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     photo_file.save(filepath)
-    # UPDATE: Ab 'localhost' ki jagah get_base_url() use ho raha hai
     photo_url = f"{get_base_url()}static/uploads/{filename}"
 
     result = students_collection.update_one(
@@ -206,6 +214,5 @@ def update_photo():
     return jsonify({"message": "Student not found."}), 404
 
 if __name__ == '__main__':
-    # Render ke liye best practice port configuration
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
