@@ -1,9 +1,9 @@
+import os
+import uuid
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-import os
-import uuid
 
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
@@ -11,25 +11,39 @@ CORS(app)
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Aapka naya aur ekdum sahi connection string
-client = MongoClient("mongodb+srv://admin123:adminpass@cluster0.a93no6o.mongodb.net/?appName=Cluster0")
+# Yeh SSL Handshake error ko band kar dega
+MONGO_URI = "mongodb+srv://admin123:adminpass@cluster0.a93no6o.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
 
+client = MongoClient(MONGO_URI)
 db = client["MagadhLibrary"]
 students_collection = db["students"]
 admin_collection = db["admin"]
 
 def init_admin():
-    if not admin_collection.find_one({"role": "admin"}):
-        admin_collection.insert_one({
-            "role": "admin",
-            "name": "ADMIN",
-            "email": "admin@magadhlibrary.in",
-            "password": "MagadhAdmin@2026",
-            "phone": "917903353191",
-            "address": "Add- Block Road, New Bypas Road (Asthawan), Bihar"
-        })
+    try:
+        if not admin_collection.find_one({"role": "admin"}):
+            admin_collection.insert_one({
+                "role": "admin",
+                "name": "ADMIN",
+                "email": "admin@magadhlibrary.in",
+                "password": "MagadhAdmin@2026",
+                "phone": "917903353191",
+                "address": "Add- Block Road, New Bypas Road (Asthawan), Bihar"
+            })
+    except Exception as e:
+        print(f"Database connection error: {e}")
 
 init_admin()
+
+# ----------------------------------------------------
+# MAGIC FIX: Automatically detect Live URL or Localhost
+# ----------------------------------------------------
+def get_base_url():
+    url = request.host_url
+    # Agar Render par hain, toh HTTPS lagao taaki mobile par image load ho
+    if "onrender.com" in url and url.startswith("http://"):
+        url = url.replace("http://", "https://")
+    return url
 
 @app.route('/', methods=['GET'])
 def home():
@@ -104,7 +118,8 @@ def assign_slot():
         filename = str(uuid.uuid4()) + "_" + photo_file.filename.replace(" ", "_")
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         photo_file.save(filepath)
-        photo_url = f"http://localhost:5000/static/uploads/{filename}"
+        # UPDATE: Ab 'localhost' ki jagah get_base_url() use ho raha hai
+        photo_url = f"{get_base_url()}static/uploads/{filename}"
 
     join_date = datetime.now()
     expiry_date = join_date + timedelta(days=30)
@@ -178,7 +193,8 @@ def update_photo():
     filename = str(uuid.uuid4()) + "_" + photo_file.filename.replace(" ", "_")
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     photo_file.save(filepath)
-    photo_url = f"http://localhost:5000/static/uploads/{filename}"
+    # UPDATE: Ab 'localhost' ki jagah get_base_url() use ho raha hai
+    photo_url = f"{get_base_url()}static/uploads/{filename}"
 
     result = students_collection.update_one(
         {"email": email},
@@ -190,4 +206,6 @@ def update_photo():
     return jsonify({"message": "Student not found."}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Render ke liye best practice port configuration
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
