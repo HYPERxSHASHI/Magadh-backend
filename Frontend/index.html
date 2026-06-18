@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magadh Library | Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@500;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #ffffff;
+      --bg-surface: #f8f9fa;
+      --bg-surface-hover: #f1f3f5;
+      --bg-panel: #ffffff;
+      --text-main: #212529;
+      --text-muted: #6c757d;
+      --border-color: #e9ecef;
+      --accent: #E85D04;
+      --accent-glow: rgba(232, 93, 4, 0.15);
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'Inter', sans-serif;
+      --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .view-section {
+      display: none;
+      min-height: 100dvh;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-primary {
+      color: var(--text-main);
+    }
+
+    .logo-accent {
+      color: var(--accent);
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      border: none;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+      background: #d05303;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(232, 93, 4, 0.05);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+      width: 100%;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 1rem;
+      background: var(--bg-base);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 12px;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      -webkit-appearance: none;
+      transition: 0.3s;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 40px;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 24px;
+      width: 24px;
+    }
+
+    .password-toggle:hover {
+      color: var(--text-main);
+    }
+
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100dvh;
+      padding: 100px 5% 5%;
+      background: var(--bg-surface);
+    }
+
+    .login-box {
+      background: var(--bg-panel);
+      padding: 3.5rem;
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      box-sizing: border-box;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      transition: 0.3s;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .auth-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100dvh;
+      padding-top: 80px;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      word-break: break-all;
+    }
+
+    .profile-icon-btn {
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: 50%;
+    }
+
+    .profile-icon-btn:hover,
+    .profile-icon-btn.active {
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    .sidebar-btn {
+      padding: 1.2rem 1rem;
+      border-radius: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .sidebar-btn.active,
+    .sidebar-btn:hover {
+      background: var(--bg-panel);
+      color: var(--accent);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      border: 1px solid var(--border-color);
+    }
+
+    .dashboard-content {
+      flex: 1;
+      padding: 3.5rem;
+      background: var(--bg-base);
+      overflow-y: auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .admin-tab-content {
+      display: none;
+    }
+
+    .admin-tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-card {
+      background: var(--bg-panel);
+      padding: 3rem;
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+      max-width: 900px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      background: var(--bg-panel);
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 900px;
+    }
+
+    th {
+      padding: 1.5rem;
+      color: var(--accent);
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--border-color);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      font-weight: 700;
+      background: var(--bg-surface);
+    }
+
+    td {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    tr:hover td {
+      background: var(--bg-surface-hover);
+    }
+
+    .student-container {
+      padding: 100px 5% 5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .profile-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 32px;
+      padding: 4rem;
+      display: flex;
+      gap: 4rem;
+      align-items: center;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .history-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 32px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-soft);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .profile-photo {
+      width: 160px;
+      height: 160px;
+      background: var(--bg-surface);
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: 0 10px 30px var(--accent-glow);
+      margin-bottom: 10px;
+    }
+
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .profile-photo svg {
+      width: 70px;
+      height: 70px;
+    }
+
+    .profile-details {
+      flex: 1;
+      width: 100%;
+    }
+
+    .profile-details h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 0.5rem;
+      letter-spacing: -1px;
+    }
+
+    .slot-badge {
+      background: var(--accent-glow);
+      color: var(--accent);
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(232, 93, 4, 0.2);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      color: var(--text-muted);
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .info-grid strong {
+      color: var(--text-main);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .attendance-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .stat-box {
+      background: var(--bg-base);
+      padding: 2rem;
+      border-radius: 20px;
+      flex: 1;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      min-width: 150px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .stat-box span {
+      display: block;
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: var(--font-display);
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .alert-box {
+      background: #fff5f5;
+      border: 1px solid #ffcccc;
+      border-radius: 20px;
+      padding: 2rem;
+      margin-top: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .alert-box h3 {
+      color: #ff4444;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid #ffe5e5;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .alert-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .wa-btn {
+      background: #25D366;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+
+    .wa-btn:hover {
+      background: #1ebe57;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+    }
+
+    .quick-assign-btn {
+      font-size: 0.8rem;
+      background: var(--bg-surface);
+      color: var(--accent);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid var(--border-color);
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+
+    .quick-assign-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .delete-btn {
+      background: #fff5f5;
+      color: #ff4444;
+      border: 1px solid #ffcccc;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .delete-btn:hover {
+      background: #ff4444;
+      color: #fff;
+    }
+
+    .logout-large-btn {
+      display: block;
+      width: 100%;
+      background: #fff5f5;
+      color: #ff4444;
+      border: 1px solid #ffcccc;
+      padding: 1.2rem;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .logout-large-btn:hover {
+      background: #ff4444;
+      color: #fff;
+    }
+
+    .attendance-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    /* MOBILE RESPONSIVE FIXES */
+    @media (max-width: 1024px) {
+      .dashboard-content {
+        padding: 2.5rem;
+      }
+
+      .profile-card {
+        gap: 2.5rem;
+        padding: 3rem;
+      }
+
+      .form-card {
+        padding: 2.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-only {
+        display: block;
+      }
+
+      .desktop-only {
+        display: none;
+      }
+
+      .dashboard-layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        white-space: nowrap;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sidebar-title {
+        display: none;
+      }
+
+      .sidebar-btn {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .sidebar-btn[style*="margin-top: auto"] {
+        margin-top: 0 !important;
+        margin-left: auto;
+      }
+
+      .dashboard-content {
+        padding: 1.5rem 1rem;
+      }
+
+      .admin-form-grid {
+        grid-template-columns: 1fr;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-card {
+        padding: 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .profile-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+        width: 100%;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-box {
+        padding: 1.5rem;
+        width: 100%;
+      }
+
+      .attendance-stats {
+        flex-direction: column;
+      }
+
+      .login-box {
+        padding: 2rem;
+        box-sizing: border-box;
+        width: 100%;
+      }
+
+      .login-container {
+        padding: 80px 1rem 2rem;
+      }
+
+      .student-container {
+        padding: 90px 1rem 3rem;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo" onclick="logout()"><span class="logo-primary">Magadh</span> <span
+        class="logo-accent">Library</span></div>
+  </nav>
+
+  <div id="view-auth" class="view-section active">
+    <div class="login-container">
+      <div class="login-box">
+        <h2 style="margin-bottom: 2.5rem; font-size: 2rem; text-transform: uppercase;"><span
+            class="logo-primary">MAGADH</span> <span class="logo-accent">PORTAL</span></h2>
+
+        <div class="auth-tabs">
+          <div class="auth-tab active" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</div>
+          <div class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">Login</div>
+        </div>
+
+        <form id="signupForm" onsubmit="handleSignup(event)">
+          <div class="form-group" style="text-align: left;">
+            <label>Full Name</label>
+            <input type="text" id="signupName" class="form-control" required placeholder="Enter your full name">
+          </div>
+          <div class="form-group" style="text-align: left;">
+            <label>Email Address</label>
+            <input type="email" id="signupEmail" class="form-control" required placeholder="name@example.com">
+          </div>
+          <div class="form-group" style="text-align: left;">
+            <label>Mobile Number</label>
+            <input type="tel" id="signupPhone" class="form-control" required placeholder="10-digit mobile number">
+          </div>
+          <div class="form-group" style="text-align: left;">
+            <label>Create Password</label>
+            <input type="password" id="signupPassword" class="form-control" required
+              placeholder="Create a strong password" style="padding-right: 45px;">
+            <div class="password-toggle"
+              onclick="togglePasswordVisibility('signupPassword', 'eyeOpenSignup', 'eyeClosedSignup')">
+              <svg id="eyeOpenSignup" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="eyeClosedSignup" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                </path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Register Account</button>
+        </form>
+
+        <form id="loginForm" onsubmit="handleLogin(event)" style="display: none;">
+          <div class="form-group" style="text-align: left;">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" class="form-control" required placeholder="name@example.com">
+          </div>
+          <div class="form-group" style="text-align: left;">
+            <label>Password</label>
+            <input type="password" id="loginPassword" class="form-control" required placeholder="Enter password"
+              style="padding-right: 45px;">
+            <div class="password-toggle"
+              onclick="togglePasswordVisibility('loginPassword', 'eyeOpenLogin', 'eyeClosedLogin')">
+              <svg id="eyeOpenLogin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="eyeClosedLogin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                </path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Secure Login</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="view-admin" class="view-section">
+    <div class="dashboard-layout">
+      <div class="sidebar">
+        <div class="sidebar-title desktop-only">
+          <div><span class="logo-primary" id="adminSidebarName" style="text-transform: uppercase;">ADMIN</span></div>
+          <div class="profile-icon-btn" id="btn-admin-profile" onclick="switchAdminTab('profile')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+        </div>
+        <div class="sidebar-btn active" id="btn-admin-overview"
+          onclick="switchAdminTab('overview'); fetchAdminDashboard();">Overview</div>
+        <div class="sidebar-btn" id="btn-admin-register" onclick="switchAdminTab('register')">Assign Slot</div>
+        <div class="sidebar-btn" id="btn-admin-database" onclick="switchAdminTab('database'); fetchStudentDatabase();">
+          Database</div>
+        <div class="sidebar-btn" id="btn-admin-attendance" onclick="switchAdminTab('attendance')">Attendance</div>
+
+        <div class="sidebar-btn mobile-only" id="btn-admin-profile-mobile" onclick="switchAdminTab('profile')">Profile
+        </div>
+
+        <div class="sidebar-btn" style="margin-top: auto; color: #ff4444;" onclick="logout()">Logout</div>
+      </div>
+
+      <div class="dashboard-content">
+
+        <div id="admin-overview" class="admin-tab-content active">
+          <h2 style="margin-bottom: 2rem; font-size: 2.5rem; text-transform: uppercase;">Library Overview</h2>
+
+          <div id="adminNotifications"></div>
+
+          <div class="attendance-stats" style="margin-top: 0; padding-top:0; border: none;">
+            <div class="stat-box">
+              <span id="dashTotalStudents">0</span>
+              <div class="stat-sub">Registered Students</div>
+            </div>
+            <div class="stat-box" style="border-color: #ffcccc; background: #fff5f5;">
+              <span id="dashExpiringStudents" style="color: #ff4444;">0</span>
+              <div class="stat-sub" style="color: #ff4444;">Expiring Soon (3 Days)</div>
+            </div>
+          </div>
+
+          <div class="alert-box">
+            <h3 style="font-size: 1.2rem; color: #ff4444; display: flex; align-items: center; gap: 10px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                </path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg> Action Required: Renewals Due
+            </h3>
+            <div id="expiringList">Loading expiring accounts...</div>
+          </div>
+        </div>
+
+        <div id="admin-register" class="admin-tab-content">
+          <h2 style="margin-bottom: 2rem; font-size: 2.5rem; text-transform: uppercase;">Confirm Registration</h2>
+          <form class="form-card" onsubmit="assignStudent(event)">
+            <div class="admin-form-grid">
+              <div class="form-group"><label>User Email</label><input type="email" id="adminEmail" class="form-control"
+                  required></div>
+              <div class="form-group"><label>Allocate Slot Number</label><input type="text" id="adminSlot"
+                  class="form-control" required></div>
+              <div class="form-group full-width"><label>Home Address</label><input type="text" id="adminAddress"
+                  class="form-control" required></div>
+            </div>
+            <button type="submit" class="btn btn-primary"
+              style="width: 100%; margin-top: 2rem; padding: 1.2rem;">Activate 1 Month Plan</button>
+          </form>
+        </div>
+
+        <div id="admin-database" class="admin-tab-content">
+          <h2 style="margin-bottom: 2rem; font-size: 2.5rem; text-transform: uppercase;">Student Database</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Mobile</th>
+                  <th>Slot</th>
+                  <th>Expiry Date</th>
+                  <th>Attendance</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="admin-attendance" class="admin-tab-content">
+          <h2 style="margin-bottom: 2rem; font-size: 2.5rem; text-transform: uppercase;">Mark Attendance</h2>
+          <form class="form-card" onsubmit="markAttendance(event)" style="max-width: 600px;">
+            <div class="form-group">
+              <label>Student Email or Slot Number</label>
+              <input type="text" id="attendanceInput" class="form-control" required placeholder="Enter Slot No or Email"
+                autocomplete="off" autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Mark Present</button>
+          </form>
+        </div>
+
+        <div id="admin-profile" class="admin-tab-content">
+          <h2 style="margin-bottom: 2rem; font-size: 2.5rem; text-transform: uppercase;">Edit Profile</h2>
+          <form class="form-card" onsubmit="updateAdminProfile(event)" style="max-width: 600px;">
+            <div class="form-group"><label>Name</label><input type="text" id="editAdminName" class="form-control"
+                required></div>
+            <div class="form-group"><label>Email</label><input type="email" id="editAdminEmail" class="form-control"
+                required></div>
+            <div class="form-group"><label>Password</label><input type="text" id="editAdminPassword"
+                class="form-control" required></div>
+            <div class="form-group"><label>Mobile No</label><input type="tel" id="editAdminPhone" class="form-control"
+                required></div>
+            <div class="form-group"><label>Address</label><input type="text" id="editAdminAddress" class="form-control"
+                required></div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-student" class="view-section">
+    <nav
+      style="position: relative; border-bottom: none; background: transparent; justify-content: space-between; box-shadow: none;">
+      <div class="logo" onclick="logout()"><span class="logo-primary">Student's</span> <span
+          class="logo-accent">Profile</span></div>
+    </nav>
+    <div class="student-container">
+
+      <div id="studentSeatNotification"></div>
+
+      <h1 style="margin-bottom: 2rem; font-size: clamp(2.5rem, 5vw, 3.5rem); letter-spacing: -1.5px; line-height: 1.1;">
+        Welcome back,<br><span id="studentFirstName" style="color: var(--accent);">Student</span></h1>
+
+      <div class="profile-card">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+          <div class="profile-photo" id="profilePhotoContainer">
+            <svg id="defaultAvatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <img id="actualPhoto" src="" alt="Profile Photo">
+          </div>
+          <label for="studentPhotoUpload" class="quick-assign-btn" style="cursor: pointer;">Upload Photo</label>
+          <input type="file" id="studentPhotoUpload" style="display: none;" accept="image/*"
+            onchange="uploadStudentPhoto(event)">
+        </div>
+
+        <div class="profile-details">
+          <h2 id="profileName">Student Name</h2>
+          <div class="slot-badge">Slot No: <span id="profileSlot">Pending</span></div>
+          <div class="info-grid">
+            <div><strong>Mobile</strong> <span id="profilePhone">---</span></div>
+            <div><strong>Email</strong> <span id="profileEmail">---</span></div>
+            <div><strong>Status</strong> <span id="profileStatus"
+                style="color: #25D366; font-weight: bold;">Active</span></div>
+            <div><strong>Plan Expiry</strong> <span id="profileExpiry"
+                style="color: #ff4444; font-weight: bold;">---</span></div>
+          </div>
+          <div class="attendance-stats">
+            <div class="stat-box">
+              <span id="profileAttendance">0 / 30</span>
+              <div class="stat-sub">Monthly Attendance</div>
+            </div>
+            <div class="stat-box">
+              <span id="profileRemaining">0</span>
+              <div class="stat-sub">Days Remaining</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem; text-transform: uppercase;">Recent Logs</h3>
+        <div id="studentAttendanceLogs" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+      </div>
+
+      <button class="logout-large-btn" onclick="logout()">LOGOUT FROM ACCOUNT</button>
+
+    </div>
+  </div>
+
+  <script>
+   
+    const API_URL = 'http://localhost:5000';
+
+    window.onload = () => {
+      const savedUserJSON = localStorage.getItem('magadh_user');
+      if (savedUserJSON) {
+        const user = JSON.parse(savedUserJSON);
+        if (user.role === 'admin') {
+          populateAdminForm(user.data);
+          showView('admin');
+          switchAdminTab('overview');
+          fetchAdminDashboard();
+        } else if (user.role === 'student') {
+          renderStudentDashboard(user.data);
+          showView('student');
+        }
+      } else {
+        switchAuthTab('login');
+      }
+    };
+
+    function showView(viewName) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + viewName).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('tab-signup').classList.remove('active');
+      document.getElementById('tab-login').classList.remove('active');
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'none';
+
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById(tab + 'Form').style.display = 'block';
+    }
+
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('active'));
+
+      const desktopProfBtn = document.getElementById('btn-admin-profile');
+      if (desktopProfBtn) desktopProfBtn.classList.remove('active');
+
+      document.getElementById('admin-' + tabId).classList.add('active');
+
+      if (tabId !== 'profile') {
+        const targetBtn = document.getElementById('btn-admin-' + tabId);
+        if (targetBtn) targetBtn.classList.add('active');
+      } else {
+        if (desktopProfBtn) desktopProfBtn.classList.add('active');
+        const mobileProfBtn = document.getElementById('btn-admin-profile-mobile');
+        if (mobileProfBtn) mobileProfBtn.classList.add('active');
+      }
+    }
+
+    function togglePasswordVisibility(inputId, openIconId, closedIconId) {
+      const passwordInput = document.getElementById(inputId);
+      const eyeOpen = document.getElementById(openIconId);
+      const eyeClosed = document.getElementById(closedIconId);
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeOpen.style.display = 'none';
+        eyeClosed.style.display = 'block';
+      } else {
+        passwordInput.type = 'password';
+        eyeOpen.style.display = 'block';
+        eyeClosed.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('magadh_user');
+      document.getElementById('loginForm').reset();
+      document.getElementById('signupForm').reset();
+      switchAuthTab('login');
+      showView('auth');
+    }
+
+    function prefillAssign(email) {
+      document.getElementById('adminEmail').value = email;
+      switchAdminTab('register');
+      window.scrollTo(0, 0);
+    }
+
+    function sendWhatsAppReminder(phone, name) {
+      const message = `Hello ${name}, this is a reminder from Magadh Library. Your 1-month study plan is expiring soon. Please renew your slot at the front desk to continue your uninterrupted study sessions. Thank you!`;
+      const url = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+
+    function populateAdminForm(adminData) {
+      if (adminData && adminData.name) {
+        document.getElementById('adminSidebarName').innerText = adminData.name.toUpperCase();
+        document.getElementById('editAdminName').value = adminData.name || '';
+        document.getElementById('editAdminEmail').value = adminData.email || '';
+        document.getElementById('editAdminPassword').value = adminData.password || '';
+        document.getElementById('editAdminPhone').value = adminData.phone || '';
+        document.getElementById('editAdminAddress').value = adminData.address || '';
+      }
+    }
+
+    async function deleteStudent(email, name) {
+      if (!confirm(`Are you absolutely sure you want to delete ${name} from the database? This action cannot be undone.`)) {
+        return;
+      }
+      try {
+        const response = await fetch(`${API_URL}/api/delete-student`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("Student removed successfully.");
+          fetchStudentDatabase();
+          fetchAdminDashboard();
+        } else {
+          alert("Failed to delete: " + result.message);
+        }
+      } catch (error) {
+        alert("Cannot connect to server.");
+      }
+    }
+
+    async function fetchAdminDashboard() {
+      try {
+        const response = await fetch(`${API_URL}/api/students`);
+        const students = await response.json();
+
+        let totalActive = 0;
+        let expiringHTML = '';
+        let expiringCount = 0;
+        let pendingCount = 0;
+        const today = new Date();
+
+        students.forEach(s => {
+          totalActive++;
+
+          if (s.slot === "Pending Allocation" || s.slot === "Unassigned" || !s.slot) {
+            pendingCount++;
+          }
+
+          if (s.expiry_date && s.expiry_date !== "N/A" && s.expiry_date !== "Pending") {
+            const expDate = new Date(s.expiry_date);
+            const diffTime = expDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 3) {
+              expiringCount++;
+              const dayText = diffDays < 0 ? "Expired" : (diffDays === 0 ? "Expires Today" : `Expires in ${diffDays} days`);
+              expiringHTML += `
+                <div class="alert-item">
+                  <div>
+                    <strong style="font-size: 1.1rem; color: #1a1a1a;">${s.name}</strong> <span style="color: var(--accent); font-weight: bold;">(Slot: ${s.slot || 'N/A'})</span><br>
+                    <span style="font-size: 0.9rem; color: #ff4444; font-weight: 600;">${dayText} - ${s.expiry_date}</span>
+                  </div>
+                  <button type="button" class="wa-btn" onclick="sendWhatsAppReminder('${s.phone}', '${s.name}')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    Remind
+                  </button>
+                </div>
+              `;
+            }
+          }
+        });
+
+        document.getElementById('dashTotalStudents').innerText = totalActive;
+        document.getElementById('dashExpiringStudents').innerText = expiringCount;
+
+        if (pendingCount > 0) {
+          document.getElementById('adminNotifications').innerHTML = `
+               <div class="alert-box" style="background: #f0fdf4; border-color: #25D366; cursor: pointer; margin-bottom: 2rem; margin-top:0;" onclick="switchAdminTab('database')">
+                 <h3 style="color: #16a34a; margin-bottom: 0;">🔔 Action Needed: ${pendingCount} new student(s) waiting for seat allotment. Click here to view.</h3>
+               </div>`;
+        } else {
+          document.getElementById('adminNotifications').innerHTML = '';
+        }
+
+        if (expiringCount === 0) {
+          document.getElementById('expiringList').innerHTML = '<p style="color: var(--text-muted); font-weight: 500;">All clear! No plans are expiring in the next 3 days.</p>';
+        } else {
+          document.getElementById('expiringList').innerHTML = expiringHTML;
+        }
+
+      } catch (error) {
+        document.getElementById('expiringList').innerHTML = '<p style="color: #ff4444;">Failed to load data. Is the backend running?</p>';
+      }
+    }
+
+    async function fetchStudentDatabase() {
+      try {
+        const response = await fetch(`${API_URL}/api/students`);
+        const students = await response.json();
+        const tbody = document.getElementById('studentTableBody');
+        tbody.innerHTML = '';
+
+        if (students.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No students registered yet.</td></tr>';
+          return;
+        }
+
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+        students.forEach(s => {
+          const attCount = s.attendance ? s.attendance.length : 0;
+
+          let slotDisplay = `<span class="quick-assign-btn" onclick="prefillAssign('${s.email}')">Assign Slot</span>`;
+          if (s.slot && s.slot !== "Pending Allocation" && s.slot !== "Unassigned" && s.slot !== "N/A") {
+            slotDisplay = s.slot;
+          }
+
+          const actionCell = `
+            <div style="display: flex; gap: 8px;">
+              <button class="delete-btn" onclick="deleteStudent('${s.email}', '${s.name}')" title="Delete Student">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          `;
+
+          const row = `<tr>
+            <td style="font-weight: 600;">${s.name}</td>
+            <td style="color: var(--text-muted);">${s.email}</td>
+            <td>${s.phone}</td>
+            <td style="color: var(--accent); font-weight: 800;">${slotDisplay}</td>
+            <td>${s.expiry_date || 'Pending'}</td>
+            <td style="font-weight: 600; color: #25D366;">${attCount} / ${daysInMonth}</td>
+            <td>${actionCell}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (error) {
+        document.getElementById('studentTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ff4444; padding: 2rem;">Failed to load database. Ensure backend is running.</td></tr>';
+      }
+    }
+
+    async function handleSignup(event) {
+      event.preventDefault();
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const phone = document.getElementById('signupPhone').value;
+      const password = document.getElementById('signupPassword').value;
+      const studentData = { name, email, phone, password, slot: "Pending Allocation" };
+      try {
+        const response = await fetch(`${API_URL}/api/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(studentData)
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("Account Created Successfully! Please login.");
+          switchAuthTab('login');
+          document.getElementById('loginEmail').value = email;
+          fetchStudentDatabase();
+        } else {
+          alert("Signup Failed: " + result.message);
+        }
+      } catch (error) {
+        alert("Server Error. Ensure Python backend is running.");
+      }
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch(`${API_URL}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          if (result.role === 'admin') {
+            localStorage.setItem('magadh_user', JSON.stringify({ role: 'admin', data: result.data }));
+            populateAdminForm(result.data);
+            showView('admin');
+            switchAdminTab('overview');
+            fetchAdminDashboard();
+          } else if (result.role === 'student') {
+            localStorage.setItem('magadh_user', JSON.stringify({ role: 'student', data: result.data }));
+            renderStudentDashboard(result.data);
+            showView('student');
+          }
+          event.target.reset();
+        } else {
+          alert("Login Failed: " + (result.message || "Invalid Credentials"));
+        }
+      } catch (error) {
+        alert("Server Error. Make sure app.py is running.");
+      }
+    }
+
+    async function updateAdminProfile(event) {
+      event.preventDefault();
+      const adminData = {
+        name: document.getElementById('editAdminName').value,
+        email: document.getElementById('editAdminEmail').value,
+        password: document.getElementById('editAdminPassword').value,
+        phone: document.getElementById('editAdminPhone').value,
+        address: document.getElementById('editAdminAddress').value
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/update-admin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adminData)
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Admin profile updated successfully in Database!");
+          document.getElementById('adminSidebarName').innerText = adminData.name.toUpperCase();
+          const user = JSON.parse(localStorage.getItem('magadh_user'));
+          if (user) {
+            user.data = adminData;
+            localStorage.setItem('magadh_user', JSON.stringify(user));
+          }
+        } else {
+          alert("Update Failed: " + result.message);
+        }
+      } catch (error) {
+        alert("Server Error. Cannot connect to backend.");
+      }
+    }
+
+    function renderStudentDashboard(s) {
+      const seatNotif = document.getElementById('studentSeatNotification');
+
+      if (s.slot_number && s.slot_number !== "Pending Allocation" && s.slot_number !== "Unassigned") {
+        seatNotif.innerHTML = `
+            <div style="background: #dcfce7; border: 1px solid #22c55e; color: #16a34a; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between;">
+              <span>🎉 Congratulations! You have been allotted Seat No: ${s.slot_number}</span>
+              <span style="cursor:pointer;" onclick="this.parentElement.style.display='none'">✖</span>
+            </div>
+          `;
+      } else {
+        seatNotif.innerHTML = `
+            <div style="background: #fffbeb; border: 1px solid #f59e0b; color: #d97706; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; font-weight: bold;">
+              ⏳ Your seat allocation is pending. Admin will assign your slot soon.
+            </div>
+          `;
+      }
+
+      document.getElementById('studentFirstName').innerText = s.name.split(' ')[0];
+      document.getElementById('profileName').innerText = s.name;
+      document.getElementById('profileSlot').innerText = s.slot_number || "Unassigned";
+      document.getElementById('profilePhone').innerText = s.phone;
+      document.getElementById('profileEmail').innerText = s.email;
+      document.getElementById('profileExpiry').innerText = s.expiry_date || "Pending Approval";
+
+      if (s.photo_url) {
+        document.getElementById('defaultAvatar').style.display = 'none';
+        document.getElementById('actualPhoto').src = s.photo_url;
+        document.getElementById('actualPhoto').style.display = 'block';
+      } else {
+        document.getElementById('defaultAvatar').style.display = 'block';
+        document.getElementById('actualPhoto').style.display = 'none';
+      }
+
+      const now = new Date();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const totalAttended = s.attendance ? s.attendance.length : 0;
+      document.getElementById('profileAttendance').innerText = `${totalAttended} / ${daysInMonth}`;
+
+      if (s.expiry_date) {
+        const expDate = new Date(s.expiry_date);
+        const diffTime = expDate - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const remaining = diffDays > 0 ? diffDays : 0;
+        document.getElementById('profileRemaining').innerText = remaining;
+      } else {
+        document.getElementById('profileRemaining').innerText = `0`;
+      }
+
+      const logsContainer = document.getElementById('studentAttendanceLogs');
+      logsContainer.innerHTML = '';
+      if (s.attendance && s.attendance.length > 0) {
+        const sortedLogs = s.attendance.sort((a, b) => new Date(b) - new Date(a));
+        sortedLogs.slice(0, 10).forEach(date => {
+          logsContainer.innerHTML += `<span class="attendance-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ${date}</span>`;
+        });
+      } else {
+        logsContainer.innerHTML = '<span style="color: var(--text-muted);">No attendance logged yet.</span>';
+      }
+    }
+
+    async function uploadStudentPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const savedUserJSON = localStorage.getItem('magadh_user');
+      if (!savedUserJSON) return;
+      const savedUser = JSON.parse(savedUserJSON);
+
+      const formData = new FormData();
+      formData.append('email', savedUser.data.email);
+      formData.append('photo', file);
+
+      try {
+        const response = await fetch(`${API_URL}/api/update-photo`, {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById('defaultAvatar').style.display = 'none';
+          document.getElementById('actualPhoto').src = result.photo_url;
+          document.getElementById('actualPhoto').style.display = 'block';
+
+          savedUser.data.photo_url = result.photo_url;
+          localStorage.setItem('magadh_user', JSON.stringify(savedUser));
+          alert("Photo uploaded successfully!");
+        } else {
+          alert("Error: " + result.message);
+        }
+      } catch (error) {
+        alert("Cannot connect to server.");
+      }
+    }
+
+    async function assignStudent(event) {
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append('email', document.getElementById('adminEmail').value);
+      formData.append('slot', document.getElementById('adminSlot').value);
+      formData.append('address', document.getElementById('adminAddress').value);
+
+      try {
+        const response = await fetch(`${API_URL}/api/assign-slot`, {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("Registration confirmed and 1-month plan activated.");
+          event.target.reset();
+          fetchAdminDashboard();
+          fetchStudentDatabase();
+        } else {
+          alert("Error: " + result.message);
+        }
+      } catch (error) {
+        alert("Cannot connect to server.");
+      }
+    }
+
+    async function markAttendance(event) {
+      event.preventDefault();
+      const identifier = document.getElementById('attendanceInput').value;
+      try {
+        const response = await fetch(`${API_URL}/api/mark-attendance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: identifier })
+        });
+        const result = await response.json();
+        alert(result.message);
+        if (response.ok) {
+          event.target.reset();
+        }
+      } catch (error) {
+        alert("Cannot connect to server.");
+      }
+    }
+  </script>
+</body>
+
+</html>
